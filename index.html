@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Language" content="en_US" />
+    <title>Find Words</title>
+    <style type="text/css" id="dark">
+        body {background-color: #666;}
+
+        #error {
+            color: #FF0000;
+        }
+        
+
+    </style>
+</head>
+<script>
+    var dictNumber = 0;
+    function addDict(){
+        dictNumber += 1;
+        document.getElementById("dictionary")
+                .innerHTML += `<input type="text" id="dict-` + dictNumber + `" name="inpStr"/>`;
+    }
+
+    function runAlgorithm(){
+        var inputString = document.getElementById('inpStr').value;
+        var dict = [];
+        for(let i = 0; i <= dictNumber; i++){
+            dict.push(document.getElementById('dict-' + i).value);
+        }
+
+        if(!(/^[a-zA-Z]+$/.test(inputString))){
+            console.log('hi');
+            document.getElementById("error")
+                .innerHTML = `There is an issue with your input string.`;
+            document.getElementById("result")
+                    .innerHTML = null;
+            return;
+        }
+
+        for(let word of dict){
+            if(!(/^[a-zA-Z]+$/.test(word))){
+                console.log('hi');
+                document.getElementById("error")
+                    .innerHTML = `There is an issue with your dictionary words.`;
+                document.getElementById("result")
+                    .innerHTML = null;
+                return;
+            }
+        }
+
+        inputString = inputString.toLowerCase();
+
+        dict = dict.map((word) => word.toLowerCase());
+
+        let result = findWords(inputString, dict);
+        document.getElementById("result")
+                    .innerHTML = `Found words: ` + result;
+        document.getElementById("error")
+                    .innerHTML = null;
+
+    }
+    
+
+    function findWords(inp, dict) {
+        var hash = {};
+        var ans = [];
+        for (var _i = 0, inp_1 = inp; _i < inp_1.length; _i++) {
+            var letter = inp_1[_i];
+            if (hash[letter]) {
+                hash[letter] += 1;
+            }
+            else {
+                hash[letter] = 1;
+            }
+        }
+
+        dict = Array.from(new Set(dict));
+        function compare(hash, word) {
+            for (var _i = 0, word_1 = word; _i < word_1.length; _i++) {
+                var letter = word_1[_i];
+                if (hash[letter]) {
+                    hash[letter] -= 1;
+                }
+                else {
+                    return false;
+                }
+            }
+            return true;
+        }
+        var duplicateHash;
+        for (var _a = 0, dict_1 = dict; _a < dict_1.length; _a++) {
+            var word = dict_1[_a];
+            if (inp.length >= word.length) {
+                duplicateHash = {...hash};
+                if (compare(duplicateHash, word)) {
+                    ans.push(word);
+                }
+            }
+        }
+        return ans;
+    }
+    
+</script>
+<body>
+    <h1>Find Words</h1>
+
+    <h3>Input String</h3>
+    <input type="text" id="inpStr" name="inpStr"/>
+    
+    <br/>
+
+    <h3>Dictionary</h3>
+    <div id="dictionary">
+        <input type="text" id="dict-0" name="inpStr"/>
+    </div>
+    <button type="button" onClick="addDict()">Add Dictionary Spot</button>
+
+    <br/>
+    <br/>
+    <button type="button" onClick="runAlgorithm()">Find Words</button>
+
+    <br/>
+    <h3 id="error" style=""></h3>
+
+    <h3 id="result" style=""></h3>
+
+</body>
+</html>
